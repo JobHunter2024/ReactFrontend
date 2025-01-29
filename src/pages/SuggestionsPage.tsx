@@ -43,9 +43,9 @@ const SuggestionsPage: React.FC = () => {
       try {
         const decodedToken = jwtDecode<JwtPayload>(token);
         setUserId(decodedToken.id);
+        fetchFavourites(decodedToken.id);
         setIsAuthenticated(true);
         fetchTechnologies();
-        fetchFavourites(decodedToken.id);
       } catch (err) {
         console.error('Invalid token:', err);
         setIsAuthenticated(false);
@@ -59,7 +59,6 @@ const SuggestionsPage: React.FC = () => {
     try {
       const response = await api.getFilteredEntityInstances(filters, searchValue);
       setOptions(response);
-      setFilteredOptions(response);
     } catch (err) {
       console.error(err);
     }
@@ -82,6 +81,19 @@ const SuggestionsPage: React.FC = () => {
         option.label.toLowerCase().includes(value.toLowerCase())
       )
     );
+  };
+
+  // Ensure options are filtered whenever either options or favourites update
+  useEffect(() => {
+    if (options.length > 0 && favourites.length >= 0) {
+      filterOptions();
+    }
+  }, [options, favourites]);
+
+  const filterOptions = () => {
+    const favouriteUris = new Set(favourites.map((fav) => fav.uri));
+    const filtered = options.filter((option) => !favouriteUris.has(option.subclass));
+    setFilteredOptions(filtered);
   };
 
   const handleAddToFavourites = async (item: EntityInstance) => {
@@ -189,9 +201,9 @@ const SuggestionsPage: React.FC = () => {
               </div>
             </Card.Body>
           </Card>
-        </Col>
 
-        <Col md={3}>
+          <br></br>
+
           <Card>
             <Card.Header>Favourite Technologies</Card.Header>
             <Card.Body style={{ maxHeight: '250px', overflowY: 'auto', padding: 0 }}>
