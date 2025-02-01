@@ -35,9 +35,25 @@ const StaticNavbar: React.FC = () => {
           </Button>
           <Button
             variant="outline-light"
+            className = "me-2"
             onClick={() => navigate('/suggestions')}
           >
             Suggestions
+          </Button>
+
+          <Button
+            variant="outline-light"
+            className = "me-2"
+            onClick={() => navigate('/searchevent')}
+          >
+            Search Event
+          </Button>
+
+          <Button
+            variant = "outline-light"
+            onClick={() => navigate('/eventstatistics')}
+          >
+            Events Statistics
           </Button>
         </Nav>
       </Container>

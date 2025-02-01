@@ -6,6 +6,8 @@ import SearchPage from './pages/SearchPage';
 import InstancePage from './pages/InstancePage';
 import SuggestionsPage from './pages/SuggestionsPage';
 import NotFoundPage from './pages/NotFoundPage'; // Import NotFoundPage
+import EventStatisticsPage from './pages/EventStatisticsPage';
+import SearchEventPage from './pages/SearchEventPage';
 
 const App: React.FC = () => {
   return (
@@ -17,6 +19,8 @@ const App: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/instance/:id" element={<InstancePage />} />
           <Route path="/suggestions" element={<SuggestionsPage />} />
+          <Route path="/eventstatistics" element={<EventStatisticsPage />} />
+          <Route path="/searchevent" element={<SearchEventPage />} />
           <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route for 404 page */}
         </Routes>
       </div>
