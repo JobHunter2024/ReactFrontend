@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { InstanceData, ApiService } from '../service/ApiService';
 
 const InstancePage: React.FC = () => {
@@ -17,34 +17,29 @@ const InstancePage: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await api.getDataOfInstance(decodedId ?? '');
-        setInstanceData(response); // Set the instance data here
+        setInstanceData(response);
       } catch (err: any) {
         console.error(err);
-        setError('Error fetching data'); // Handle error
+        setError('Error fetching data');
       }
     };
 
     fetchData();
   }, [id]);
 
-  const isOntologyUri = (value: string) =>
-    value.startsWith('http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology');
-
   const displayValue = (value: string) => {
-    if (isOntologyUri(value)) {
-      return value.replace('http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#', '');
-    }
-    return value;
+    return value
+      .replace(/^"/, '') // Remove leading quote
+      .replace(/"\^\^xsd:.*/, '') // Remove trailing ^^xsd:* suffix
+      .replace('http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#', '');
   };
 
-  // Transform camelCase or PascalCase to a formatted string
   const formatCamelCase = (str: string) => {
     return str.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (match) => match.toUpperCase());
   };
 
-  // Group by `property` field
   const groupedData = instanceData.reduce((acc, item) => {
-    const key = item.property; // Group by `property` field
+    const key = item.property;
     if (!acc[key]) {
       acc[key] = [];
     }
@@ -53,8 +48,28 @@ const InstancePage: React.FC = () => {
   }, {} as Record<string, InstanceData[]>);
 
   const handleCardClick = (instanceValue: string) => {
-    const encodedInstance = encodeURIComponent(instanceValue); // URL encode the instance value
-    navigate(`/instance/${encodedInstance}`); // Navigate to the /instance/URLEncodedValue page
+    const encodedInstance = encodeURIComponent(instanceValue);
+    navigate(`/instance/${encodedInstance}`);
+  };
+
+  const getButtonStyle = (instanceOfValues: string) => {
+    const ontologyColors: Record<string, string> = {
+      'Skill': 'bg-dark text-white',
+      'SoftSkill': 'bg-warning text-white',
+      'TechnicalSkill': 'bg-purple text-white',
+      'LanguageSkill': 'bg-success text-white',
+      'ProgrammingLanguage': 'bg-lightgreen text-white',
+      'Library': 'bg-danger text-white',
+      'Framework': 'bg-info text-white',
+    };
+
+    const instanceTypes = instanceOfValues.split(', ').map((val) => displayValue(val));
+    for (const type of Object.keys(ontologyColors).reverse()) {
+      if (instanceTypes.includes(type)) {
+        return ontologyColors[type];
+      }
+    }
+    return 'bg-white text-black';
   };
 
   return (
@@ -78,23 +93,37 @@ const InstancePage: React.FC = () => {
               Object.entries(groupedData).map(([property, items]) => {
                 const label =
                   items[0].propertyLabel ||
-                  formatCamelCase(displayValue(property)); // Use label if available, otherwise formatted property
+                  formatCamelCase(displayValue(property));
 
                 return (
                   <Card className="mt-3" key={property}>
                     <Card.Header>{label}</Card.Header>
                     <Card.Body>
-                      {items.map((item, index) => (
-                        <p key={index}>
-                          {isOntologyUri(item.value as string) ? (
-                            <a href="#" onClick={() => handleCardClick(item.value as string)}>
+                      {items.map((item, index) => {
+                        if (!item.instanceOfValues) {
+                          return <p key={index}>{displayValue(item.value as string)}</p>;
+                        }
+
+                        const instanceOfText = item.instanceOfValues
+                          .split(', ')
+                          .map((val) => displayValue(val))
+                          .join(', ');
+
+                        return (
+                          <OverlayTrigger
+                            key={index}
+                            placement="top"
+                            overlay={<Tooltip>{instanceOfText}</Tooltip>}
+                          >
+                            <Button
+                              className={`rounded-pill m-1 ${getButtonStyle(item.instanceOfValues)}`}
+                              onClick={() => handleCardClick(item.value as string)}
+                            >
                               {displayValue(item.value as string)}
-                            </a>
-                          ) : (
-                            item.value.toString()
-                          )}
-                        </p>
-                      ))}
+                            </Button>
+                          </OverlayTrigger>
+                        );
+                      })}
                     </Card.Body>
                   </Card>
                 );
