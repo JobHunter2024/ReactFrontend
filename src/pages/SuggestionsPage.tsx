@@ -24,13 +24,26 @@ interface JwtPayload {
   exp: number; // expiration timestamp
 }
 
+interface DecodedSuggestion {
+  technologyName: string;
+  relations: {
+    dependencyName: string;
+    relationsList: string[];
+  }[];
+}
+
+interface SuggestionCardProps {
+  suggestions: DecodedSuggestion[];
+  handleCardClick: (iri: string) => void;
+}
+
 const SuggestionsPage: React.FC = () => {
   const [options, setOptions] = useState<EntityInstance[]>([]);
   const [filteredOptions, setFilteredOptions] = useState<EntityInstance[]>([]);
   const [favourites, setFavourites] = useState<technology[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<DecodedSuggestion[]>([]); // Updated to DecodedSuggestion
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState<"add" | "remove" | null>(null);
@@ -180,8 +193,8 @@ const SuggestionsPage: React.FC = () => {
       setIsSubmitting(true);
       const uris: string[] = favourites.map((fav) => fav.uri);
 
-      const response = await api.getSuggestions(uris[0]);
-      setSuggestions(response);
+      const response = await api.getSuggestions(uris);
+      setSuggestions(response); // Assuming the response is decoded correctly
     } catch (err) {
       console.error(err);
     } finally {
@@ -254,7 +267,7 @@ const SuggestionsPage: React.FC = () => {
             </Card.Body>
           </Card>
         </Col>
-
+        
         <Col md={6}>
           <Button
             variant="primary"
@@ -278,29 +291,37 @@ const SuggestionsPage: React.FC = () => {
           </Button>
 
           <div className="mt-4">
-            {suggestions.length > 0 && (
-              <div className="w-100">
-                {suggestions.map((suggestion, index) => (
-                  <Card
-                    key={index}
-                    className="mb-3"
-                    onClick={() => handleCardClick(suggestion.resourceUri)}
-                  >
-                    <Card.Body>
-                      <h5>Intermediate Related Skill</h5>
-                      <p>{suggestion.intermediateRelatedSkill}</p>
-                      <h5>Intermediate Relation</h5>
-                      <p>{suggestion.intermediateRelation}</p>
-                      <h5>Related Skill</h5>
-                      <p>{suggestion.relatedSkill}</p>
-                      <h5>Relation</h5>
-                      <p>{suggestion.relation}</p>
-                    </Card.Body>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
+  {suggestions.length > 0 && (
+    <div className="w-100">
+      {suggestions.map((suggestion, index) => (
+        <div key={index}>
+          {/* For each dependency, create a new card */}
+          {suggestion.relations.map((relation, idx) => (
+            <Card
+              key={idx}
+              className="mb-3"
+              onClick={() =>
+                handleCardClick(
+                  `http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#${relation.dependencyName}`
+                )
+              }
+            >
+              <Card.Body>
+                <h5>{relation.dependencyName}</h5>
+                <ul>
+                  {/* Display the relationsList for the given dependency */}
+                  {relation.relationsList.map((relationType, rIdx) => (
+                    <li key={rIdx}>{relationType}</li>
+                  ))}
+                </ul>
+              </Card.Body>
+            </Card>
+          ))}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
         </Col>
       </Row>
 

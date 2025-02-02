@@ -14,6 +14,7 @@ const HomePage: React.FC = () => {
     const fetchJobs = async () => {
       try {
         const response = await api.getJobs();
+        console.log(response)
         setJobs(response);
       } catch (err: any) {
         console.error(err);
@@ -88,9 +89,9 @@ const HomePage: React.FC = () => {
       ) : (
         <Row>
           {jobs
-            .filter(job => job.availability !== null) // Remove jobs with null availability
+            .filter((job) => job.label && job.label.trim() !== "")
             .map((job) => {
-              const isAvailable = job.availability?.includes('true');
+              const isRemoved = job.dateRemoved;
               const skills = parseSkills(job.relatedSkills);
 
               return (
@@ -98,30 +99,34 @@ const HomePage: React.FC = () => {
                   <Card 
                     className="mt-3" 
                     onClick={() => handleCardClick(job.job)}
-                    border={isAvailable ? 'primary' : 'danger'}
+                    border={isRemoved ? 'danger' : 'primary' }
                     style={{ borderWidth: '3px', cursor: 'pointer' }} // Thicker border, pointer cursor
                   >
                     <Card.Header className="d-flex justify-content-between align-items-center">
                       <h3>{job.label}</h3>
-                      <Badge bg={isAvailable ? 'primary' : 'danger'}>
-                        {isAvailable ? 'Available' : 'Unavailable'}
+                      <Badge bg={isRemoved ? 'danger' : 'primary' }>
+                        {!isRemoved ? 'Available' : 'Unavailable'}
                       </Badge>
                     </Card.Header>
                     <Card.Body>
                       <div className="d-flex flex-wrap gap-2 mt-2">
-                        {skills.map(({ skillName, skillType }) => (
-                          <OverlayTrigger
-                            key={skillName}
-                            placement="top"
-                            overlay={<Tooltip>{skillType}</Tooltip>}
-                          >
-                            <Button 
-                              className={`rounded-pill m-1 ${getButtonStyle(skillType)}`} 
+                        <p><strong>Technical Skills :</strong></p>
+                        <br></br>
+                        <div>
+                          {skills.map(({ skillName, skillType }) => (
+                            <OverlayTrigger
+                              key={skillName}
+                              placement="top"
+                              overlay={<Tooltip>{skillType}</Tooltip>}
                             >
-                              {skillName}
-                            </Button>
-                          </OverlayTrigger>
-                        ))}
+                              <Button 
+                                className={`rounded-pill m-1 ${getButtonStyle(skillType)}`} 
+                              >
+                                {skillName}
+                              </Button>
+                            </OverlayTrigger>
+                          ))}
+                        </div>
                       </div>
                     </Card.Body>
                   </Card>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, OverlayTrigger, Tooltip as BootstrapTooltip } from 'react-bootstrap';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { LatLngExpression } from 'leaflet';
 import { InstanceData, ApiService } from '../service/ApiService';
 import {
   LineChart,
@@ -14,6 +17,7 @@ import {
 } from 'recharts';
 import StatisticsService from '../service/StatisticsService';
 import { JobData, ChartData } from '../service/StatisticsService';
+import { getCoordinatesFromAddress } from '../service/LocationService';
 
 const InstancePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +25,10 @@ const InstancePage: React.FC = () => {
   const [instanceData, setInstanceData] = useState<InstanceData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [jobData, setJobData] = useState<JobData[]>([]);
-  const [pageEntityType, setpageEntityType] = useState<string | null>(null);
+  const [pageEntityType, setPageEntityType] = useState<string | null>(null);
+  const [jobLocation, setJobLocation] = useState<string | null>(null);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [skillData, setSkillData] = useState<any>(null); // Added to hold skill data
 
   const api = new ApiService('http://localhost:8888/api/v1');
   const statisticsApi = new StatisticsService('http://localhost:8888/api/v1');
@@ -64,21 +71,20 @@ const InstancePage: React.FC = () => {
 
   const getChartData = useMemo(() => {
     const data = generateChartData(jobData);
-    
+
     if (data.length === 0) {
       return [];
     }
-    
+
     if (data.length === 1) {
       const today = new Date().toISOString().split("T")[0];
       if (data[0].date !== today) {
         data.push({ date: today, availableJobs: data[0].availableJobs, removedJobs: data[0].removedJobs });
       }
     }
-    
+
     return data;
   }, [jobData]);
-  
 
   useEffect(() => {
     const decodedId = decodeURIComponent(id || '');
@@ -88,32 +94,49 @@ const InstancePage: React.FC = () => {
         const response = await api.getDataOfInstance(decodedId ?? '');
         setInstanceData(response);
 
-        // Find the "Instance Of" properties
         const instanceOfEntries = response.filter(
           (item) => item.propertyLabel === 'Instance Of'
         );
 
-        // Check if it matches "Company" or "Skill"
-        const companyUri = 'http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#Company';
+        const jobUri = 'http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#Job';
         const skillUri = 'http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#Skill';
 
-        const foundCompany = instanceOfEntries.some((item) => item.value === companyUri);
+        const foundJob = instanceOfEntries.some((item) => item.value === jobUri);
         const foundSkill = instanceOfEntries.some((item) => item.value === skillUri);
 
-        if (foundCompany) {
-          setpageEntityType('Company');
-          console.log("Page Entity Type is Company");
+        if (foundJob) {
+          setPageEntityType('Job');
+          console.log("Page Entity Type is Job");
         }
         if (foundSkill) {
-          setpageEntityType('Skill');
+          setPageEntityType('Skill');
           console.log("Page Entity Type is Skill");
         }
 
-        // Fetch job data if found "Skill" or "Company"
-        if (foundCompany || foundSkill) {
+        if (foundJob || foundSkill) {
           fetchJobData().then(setJobData);
         } else {
-          setJobData([]); // Clear job data if not Skill or Company
+          setJobData([]);
+        }
+
+        // Get job location string from response
+        const locationProperty = response.find(
+          (item) => item.property === "http://www.semanticweb.org/ana/ontologies/2024/10/JobHunterOntology#jobLocation"
+        );
+
+        if (locationProperty) {
+          const address = locationProperty.value as string;
+          // Call geocoding function to get coordinates
+          const coordinates = await getCoordinatesFromAddress(address);
+          if (coordinates) {
+            setCoordinates(coordinates);
+          }
+        }
+
+        // Fetch skill data if the page is a Skill
+        if (foundSkill) {
+          const skillResponse = await api.getSkillData(decodedId); // Assume it uses the API method from ApiService
+          setSkillData(skillResponse || null); // Set the skill data
         }
       } catch (err: any) {
         console.error(err);
@@ -125,8 +148,8 @@ const InstancePage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-    // Clear job data if pageEntityType is not Skill or Company
-    if (pageEntityType !== "Skill" && pageEntityType !== "Company") {
+    // Clear job data if pageEntityType is not Skill or Job
+    if (pageEntityType !== "Skill" && pageEntityType !== "Job") {
       setJobData([]);
     }
   }, [pageEntityType]);
@@ -195,7 +218,24 @@ const InstancePage: React.FC = () => {
       ) : (
         <Row>
           <Col>
-            <h1>Instance Details</h1>
+            <h1>
+              {groupedData["http://www.w3.org/2000/01/rdf-schema#label"]?.[0]?.value 
+                ? String(groupedData["http://www.w3.org/2000/01/rdf-schema#label"][0].value)
+                : "Instance Details"}
+            </h1>
+
+            {pageEntityType === "Job" && coordinates && (
+              <MapContainer center={coordinates as LatLngExpression} zoom={13} style={{ height: '400px', width: '100%' }}>
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+                />
+                <Marker position={coordinates as LatLngExpression}>
+                  <Popup>{jobLocation}</Popup>
+                </Marker>
+              </MapContainer>
+            )}
+
             {pageEntityType === "Skill" && (
               <div style={{ width: '100%' }}>
                 {chartData.length === 0 ? (
@@ -215,6 +255,27 @@ const InstancePage: React.FC = () => {
                 )}
               </div>
             )}
+
+
+            {pageEntityType === "Skill" && skillData && (
+              <Row className="mt-3">
+                {Object.entries(skillData).map(([key, value]) => (
+                    <Card className="mt-3">
+                      <Card.Header>
+                        {key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase())}
+                      </Card.Header>
+                      <Card.Body>
+                        {key === 'logo_url' && value ? ( // Check if the key is 'logo_url'
+                          <img src={value as string} alt="Logo" style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }} />
+                        ) : (
+                          <p>{String(value)}</p> // For other keys, display the value as text
+                        )}
+                      </Card.Body>
+                    </Card>
+                ))}
+              </Row>
+            )}
+
             {Object.keys(groupedData).length > 0 ? (
               Object.entries(groupedData).map(([property, items]) => {
                 const label =
