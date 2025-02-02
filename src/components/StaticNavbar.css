@@ -1,0 +1,71 @@
+.navbar {
+  background-color: #3665a6 !important;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white !important;
+}
+
+.navbar-toggler {
+  border: none !important;
+}
+
+.navbar .btn {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  color: white !important;
+  font-size: 1rem;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.navbar .btn:hover,
+.navbar .btn:focus,
+.navbar .btn:active {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-color: white !important;
+  color: black !important;
+}
+
+.navbar .me-2 {
+  margin-right: 0.5rem !important;
+}
+
+.navbar .btn:focus:not(:focus-visible),
+.navbar .btn:active:not(:focus-visible) {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+.navbar .btn:active,
+.navbar .btn:focus {
+  background-color: white !important;
+  color: black !important;
+}
+
+.navbar-collapse {
+  justify-content: flex-end;
+}
+
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+@media (max-width: 991px) {
+  .navbar .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

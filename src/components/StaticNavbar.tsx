@@ -5,6 +5,8 @@ import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import { NavDropdown } from 'react-bootstrap';
+import '../components/StaticNavbar.css';
+
 
 const StaticNavbar: React.FC = () => {
   const [isNavbarExpanded, setNavbarExpanded] = useState(false); // State for tracking navbar collapse
