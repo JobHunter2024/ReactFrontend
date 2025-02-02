@@ -108,7 +108,6 @@ const HomePage: React.FC = () => {
                       </Badge>
                     </Card.Header>
                     <Card.Body>
-                      <p>{job.job}</p>
                       <div className="d-flex flex-wrap gap-2 mt-2">
                         {skills.map(({ skillName, skillType }) => (
                           <OverlayTrigger
