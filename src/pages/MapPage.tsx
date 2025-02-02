@@ -92,7 +92,7 @@ const MapPage: React.FC = () => {
   };
 
   return (
-    <Container fluid className="p-4">
+    <Container fluid className="p-4" vocab="https://schema.org/">
       <Row>
         <Col>
           <h2>Joburi din Romania</h2>
@@ -138,12 +138,14 @@ const MapPage: React.FC = () => {
       {selectedLocation && (
         <Row className="mt-3">
           <Col>
-            <Card>
+            <Card typeof="JobPosting">
               <Card.Header>Detalii Job</Card.Header>
               <Card.Body>
-                <h4>{selectedLocation.jobTitle.value}</h4>
-                <p>Company: {selectedLocation.companyName.value}</p>
-                <p>Address: {selectedLocation.coordinates.address}</p>
+                <h4 property="title">{selectedLocation.jobTitle.value}</h4>
+                <p property="hiringOrganization" typeof="Organization">
+                  <span property="name">Company: {selectedLocation.companyName.value}</span></p>
+                <p property="jobLocation" typeof="Place">
+                  <span property="address">Address: {selectedLocation.coordinates.address}</span></p>
                 <button
                   className="btn btn-primary"
                   onClick={() => handleCardClick(selectedLocation.jobTitle.value)}
