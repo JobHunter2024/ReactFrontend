@@ -54,6 +54,7 @@ const EventStatisticsPage: React.FC = () => {
     fetchData();
   }, []);
 
+
   // Prepare the Pie Chart Data (Events by Type)
   const pieDataType = {
     labels: eventsByType.map(item => item.label || "Unknown"),
@@ -140,32 +141,34 @@ const EventStatisticsPage: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <h1>Event Statistics</h1>
+    
+    <div vocab="http://schema.org/" typeof="DataCatalog" className="container">
+
+      <h1 property="name">Events Statistics</h1>
 
       <div className="pie-chart-container">
         {/* Pie Chart: Events by Type */}
-        <div className="pie-chart-section">
-          <h2>Event Distribution by Type</h2>
+        <div typeof="Dataset" className="pie-chart-section">
+          <h2 property="name">Events Distribution by Type</h2>
           {eventsByType.length > 0 ? <Pie data={pieDataType} /> : <p>Loading Events by Type</p>}
         </div>
 
         {/* Pie Chart: Events is Online */}
-        <div className="pie-chart-section">
-          <h2>Online vs Onsite Romania Events</h2>
+        <div typeof="Dataset" className="pie-chart-section">
+          <h2 property="name">Online vs Onsite Romania Events</h2>
           {eventsIsOnline.length > 0 ? <Pie data={pieDataOnline} /> : <p>Loading Events Is Online</p>}
         </div>
       </div>
 
       {/* Bar Chart: Events per Topic */}
-      <div className="chart-section">
-        <h2>Event Count by Topic</h2>
+      <div typeof="Dataset" className="chart-section">
+        <h2 property="name">Events Count by Topic</h2>
         {eventsPerTopic.length > 0 ? <Bar data={barDataTopic} /> : <p>Loading Events per Topic</p>}
       </div>
 
       {/* Grouped Bar Chart: Events per Technical Skill */}
-      <div className="chart-section">
-        <h2>Event Count by Technical Skill(Programming Language, Framework, Library)</h2>
+      <div typeof="Dataset" className="chart-section">
+        <h2 property="name">Events Count by Technical Skill(Programming Language, Framework, Library)</h2>
         {eventsPerTechnicalSkill.length > 0 ? (
           <Bar data={barDataTechnicalSkill} options={barOptionsTechnicalSkill} />
         ) : (
@@ -174,8 +177,8 @@ const EventStatisticsPage: React.FC = () => {
       </div>
 
       {/* Calendar Heatmap: Events per Date */}
-      <div className = "chart-section">
-        <h2>Event Density Throughout the Year 2025</h2>
+      <div typeof="Dataset" className = "chart-section">
+        <h2 property="name">Events Density Throughout the Year 2025</h2>
         <CalendarHeatmap
             startDate={new Date('2025-01-01')}   // Show last 1 year of data
             endDate={new Date('2025-12-31')} // End at today’s date

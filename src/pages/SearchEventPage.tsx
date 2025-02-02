@@ -142,18 +142,22 @@ const EventSearchPage: React.FC = () => {
       </div>
 
       {/* Results Section */}
-      <div className="events-list">
+      <div vocab="https://schema.org/" className="events-list">
         <h2>Filtered Events</h2>
         {events.length === 0 ? (
           <p>No events found with the selected filters.</p>
         ) : (
           <ul>
             {events.map((event,index) => (
-              <li key={event.id || `event-${index}`}>
-                <h3>{event.title}</h3>
-                <p>Type: {event.type} | Topic: {event.topic} | {event.isOnline ? "Online" : "Onsite"} | Location: 
-                  {event.location} | Date: {new Date(event.date).toLocaleDateString()} | 
-                  <a href={event.eventURL} target="_blank" rel="noopener noreferrer">Go to Event</a></p>
+              <li key={event.id || `event-${index}`} typeof="Event">
+                <h3 property="name">{event.title}</h3>
+                <p>Type: <span>{event.type}</span> | 
+                  Topic: <span property="about">{event.topic}</span> | 
+                  <span property="eventAttendanceMode" content={event.isOnline ? "https://schema.org/OnlineEventAttendanceMode" : "https://schema.org/OfflineEventAttendanceMode"}>
+                    {event.isOnline ? "Online" : "Onsite"} </span>| 
+                    Location: <span property="location">{event.location}</span> | 
+                  Date: <span property="startDate"> {new Date(event.date).toLocaleDateString()} </span> | 
+                  <a href={event.eventURL} target="_blank" rel="noopener noreferrer" property="url">Go to Event</a></p>
               </li>
             ))}
           </ul>
