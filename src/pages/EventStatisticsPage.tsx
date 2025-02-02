@@ -5,7 +5,7 @@ import axios from 'axios';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css'; 
 import './EventStatisticsPage.css';
-import { format, set} from 'date-fns';
+import { format} from 'date-fns';
 
 // Register required Chart.js components
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -16,16 +16,21 @@ const EventStatisticsPage: React.FC = () => {
   const [eventsPerTopic, setEventsPerTopic] = useState<any[]>([]);
   const [eventsPerDate, setEventsPerDate] = useState<any[]>([]);
   const [eventsPerTechnicalSkill, setEventsPerTechnicalSkill] = useState<any[]>([]);
+  const eventsByTypeAPI = import.meta.env.VITE_API_EVENTS_PER_TYPE;
+  const eventsIsOnlineAPI = import.meta.env.VITE_API_EVENTS_IS_ONLINE;
+  const eventsPerTopicAPI = import.meta.env.VITE_API_EVENTS_PER_TOPIC;
+  const eventsPerDateAPI = import.meta.env.VITE_API_EVENTS_PER_DATE;
+  const eventsPerTechnicalSkillAPI = import.meta.env.VITE_API_EVENTS_PER_TECHNICAL_SKILL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [eventsType, eventsOnline, eventsTopic, eventsDate, eventsTechnicalSkill] = await Promise.all([
-          axios.get('http://localhost:8000/events-by-type'),
-          axios.get('http://localhost:8000/events-is-online'),
-          axios.get('http://localhost:8000/events-per-topic'),
-          axios.get('http://localhost:8000/events-per-date'),
-          axios.get('http://localhost:8000/events-per-technical-skill'),
+          axios.get(eventsByTypeAPI),
+          axios.get(eventsIsOnlineAPI),
+          axios.get(eventsPerTopicAPI),
+          axios.get(eventsPerDateAPI),
+          axios.get(eventsPerTechnicalSkillAPI),
         ]);
 
         console.log('Fetched Data:', {

@@ -10,7 +10,8 @@ interface Event {
   topic: string;
   isOnline: boolean;
   location: string;
-  date: string; // or Date object
+  eventURL: string;
+  date: string; 
 }
 
 type OptionType = { value: string; label: string };
@@ -29,14 +30,19 @@ const EventSearchPage: React.FC = () => {
   const [selectedIsOnline, setSelectedIsOnline] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
+  const eventsTypesAPI = import.meta.env.VITE_API_EVENTS_TYPES;
+  const eventsTopicsAPI = import.meta.env.VITE_API_EVENTS_TOPICS;
+  const eventsLocationsAPI = import.meta.env.VITE_API_EVENTS_LOCATIONS;
+  const eventsAPI = import.meta.env.VITE_API_EVENTS;
+
   // Fetch filter options from API
   useEffect(() => {
     const fetchFilters = async () => {
       try {
         const [typesRes, topicsRes, locationsRes] = await Promise.all([
-          axios.get("http://localhost:8000/events-types"),
-          axios.get("http://localhost:8000/events-topics"),
-          axios.get("http://localhost:8000/events-locations"),
+          axios.get(eventsTypesAPI),
+          axios.get(eventsTopicsAPI),
+          axios.get(eventsLocationsAPI),
         ]);
 
         setEventTypes(typesRes.data.map((type: string) => ({ value: type, label: type })));
@@ -62,7 +68,7 @@ const EventSearchPage: React.FC = () => {
           dates: selectedDate || undefined,
         };
 
-        const response = await axios.get("http://localhost:8000/events", { params });
+        const response = await axios.get(eventsAPI, { params });
         console.log("API Response:", response.data);
         setEvents(response.data);
       } catch (error) {
@@ -146,7 +152,8 @@ const EventSearchPage: React.FC = () => {
               <li key={event.id || `event-${index}`}>
                 <h3>{event.title}</h3>
                 <p>Type: {event.type} | Topic: {event.topic} | {event.isOnline ? "Online" : "Onsite"} | Location: 
-                  {event.location} | Date: {new Date(event.date).toLocaleDateString()}</p>
+                  {event.location} | Date: {new Date(event.date).toLocaleDateString()} | 
+                  <a href={event.eventURL} target="_blank" rel="noopener noreferrer">Go to Event</a></p>
               </li>
             ))}
           </ul>
