@@ -295,6 +295,7 @@ const SuggestionsPage: React.FC = () => {
     <div className="w-100">
       {suggestions.map((suggestion, index) => (
         <div key={index}>
+          
           {/* For each dependency, create a new card */}
           {suggestion.relations.map((relation, idx) => (
             <Card
@@ -309,10 +310,16 @@ const SuggestionsPage: React.FC = () => {
               <Card.Body>
                 <h5>{relation.dependencyName}</h5>
                 <ul>
-                  {/* Display the relationsList for the given dependency */}
-                  {relation.relationsList.map((relationType, rIdx) => (
-                    <li key={rIdx}>{relationType}</li>
-                  ))}
+                  {relation.relationsList.map((relationType, rIdx) => {
+                    // Extract the last part after #
+                    const formattedRelation = relationType.split("#").pop()?.replace(/([a-z])([A-Z])/g, "$1 $2");
+                    
+                    return (
+                      <li key={rIdx}>
+                        {formattedRelation} <strong>{suggestion.technologyName}</strong>
+                      </li>
+                    );
+                  })}
                 </ul>
               </Card.Body>
             </Card>
