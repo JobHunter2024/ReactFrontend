@@ -28,7 +28,8 @@ export interface Entity {
         "propertyDescription": string,
         "propertyLabel": string,
         "property": string,
-        "value": Object
+        "value": Object,
+        "instanceOfValues": string
   }
 
   export interface Suggestion {
@@ -37,6 +38,13 @@ export interface Entity {
     "relatedSkill": string,
     "relation": string,
     "resourceUri": string
+  }
+
+  export interface Job {
+    availability : string;
+    label : string;
+    job : string;
+    relatedSkills : string;
   }
 
 export class ApiService {
@@ -173,6 +181,17 @@ export class ApiService {
           "iri" : iri
         }
         );
+
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+        throw(error);
+      }
+  }
+
+  public async getJobs() {
+    try {
+        const response = await axios.get<Job[]>("http://localhost:8888/api/v1/entities/jobs");
 
         return response.data;
       } catch (error) {

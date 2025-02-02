@@ -11,6 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import { ToastProvider } from './context/ToastContext';
 import JwtUtils from './utils/JwtUtils';
+import JobChart from './pages/JobChart';
 import MapPage from './pages/MapPage';
 
 const App: React.FC = () => {
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/job" element={<JobChart />} />
             <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route for 404 page */}
           </Routes>
         </div>
