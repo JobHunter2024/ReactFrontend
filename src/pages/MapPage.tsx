@@ -213,7 +213,7 @@ const MapPage: React.FC = () => {
   };
 
   return (
-    <Container fluid className="map-page-container">
+    <Container fluid className="map-page-container" vocab="https://schema.org/">
       <Row>
         <Col lg={8}>
           <h2 className="page-title">IT Jobs and Tech Events onsite in Romania</h2>
