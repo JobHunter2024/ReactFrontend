@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import "./EventSearchPage.css";
+import { WebPage } from 'schema-dts';
+import { JsonLd } from 'react-schemaorg';
 
 interface Event {
   id: number;
@@ -157,12 +159,25 @@ const EventSearchPage: React.FC = () => {
                     {event.isOnline ? "Online" : "Onsite"} </span>| 
                     Location: <span property="location">{event.location}</span> | 
                   Date: <span property="startDate"> {new Date(event.date).toLocaleDateString()} </span> | 
-                  <a href={event.eventURL} target="_blank" rel="noopener noreferrer" property="url">Go to Event</a></p>
+                  <a href={event.eventURL} target="_blank" rel="noopener noreferrer" property="url">Event Page</a></p>
               </li>
             ))}
           </ul>
         )}
       </div>
+      <JsonLd<WebPage>
+        item={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Search Event Webpage',
+          author: 'Ciobanu Ana',
+          inLanguage: 'English',
+          about: "A web page where user can search and filter It related events from Romania or online events.",
+          datePublished: '2025-02-03',
+          isPartOf: 'Job Hunter Project',
+          keywords: 'IT events, Tech, Romania, Online Events',
+        }}
+      />
     </div>
   );
 };

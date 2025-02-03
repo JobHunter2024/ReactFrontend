@@ -6,6 +6,8 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css'; 
 import './EventStatisticsPage.css';
 import { format} from 'date-fns';
+import { DataCatalog } from 'schema-dts';
+import { JsonLd } from 'react-schemaorg';
 
 // Register required Chart.js components
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Tooltip, Legend);
@@ -197,6 +199,20 @@ const EventStatisticsPage: React.FC = () => {
             }}
           />
         </div>
+        <JsonLd<DataCatalog>
+                item={{
+                  '@context': 'https://schema.org',
+                  '@type': 'DataCatalog',
+                  name: 'IT events statistics',
+                  audience: 'IT professionals and enthusiasts, job seekers, and students',
+                  dateCreated: '2025',
+                  inLanguage: 'English',
+                  isPartOf: 'Job Hunter Project',
+                  isFamilyFriendly: true,
+                  keywords: 'IT, events, statistics, Romania',
+                  description: 'Statistics on IT related events, that takes place in Romania or can be accesed online',
+                }}
+        />
     </div>
   );
 };
