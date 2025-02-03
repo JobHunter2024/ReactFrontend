@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
-import "./EventSearchPage.css";
+import "../assets/styles/EventSearchPage.css";
 import { WebPage } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';
 

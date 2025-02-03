@@ -4,7 +4,7 @@ import { Pie, Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css'; 
-import './EventStatisticsPage.css';
+import '../assets/styles/EventStatisticsPage.css';
 import { format} from 'date-fns';
 import { DataCatalog } from 'schema-dts';
 import { JsonLd } from 'react-schemaorg';

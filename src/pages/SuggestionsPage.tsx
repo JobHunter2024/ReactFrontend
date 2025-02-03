@@ -14,7 +14,7 @@ import { EntityInstance, Suggestion, ApiService } from "../service/ApiService";
 import UserDataService from "../service/UserDataService";
 import { technology } from "../service/UserDataService";
 import { jwtDecode } from "jwt-decode";
-import "../pages/SuggestionsPage.css";
+import "../assets/styles/SuggestionsPage.css";
 
 // Interface for decoding JWT payload (based on your JWT structure)
 interface JwtPayload {
