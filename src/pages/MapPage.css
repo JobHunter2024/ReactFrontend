@@ -16,11 +16,24 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   }
   
-  .sidebar-container {
-    height: calc(100vh - 80px);
-    background: #f8f9fa;
-    border-left: 1px solid #dee2e6;
-  }
+/* Ensure the container and row take full viewport height */
+.map-page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-page-container > .row {
+  flex: 1;
+  min-height: 0; /* Allows flex children to shrink below their default minimum size */
+}
+
+/* Make the sidebar scrollable */
+.sidebar-container {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 15px; /* Prevents scrollbar from overlapping content */
+}
   
   .listing-cards-container {
     height: calc(100% - 60px);

@@ -259,7 +259,7 @@ const MapPage: React.FC = () => {
                     <option value="Hackathon">Hackathon</option>
                   </select>
 
-                  <div className="form-check">
+                  {/* <div className="form-check">
                     <input
                       type="checkbox"
                       className="form-check-input"
@@ -270,7 +270,7 @@ const MapPage: React.FC = () => {
                     <label className="form-check-label" htmlFor="showRomaniaEvents">
                       Show events from Romania only
                     </label>
-                  </div>
+                  </div> */}
                 </>
               )}
             </div>

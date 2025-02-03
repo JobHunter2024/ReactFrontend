@@ -81,81 +81,49 @@ const Map: React.FC<MapProps> = ({ locations = [], showEvents = true, onMarkerCl
 
       const marker = L.marker([lat + jitter(), lng + jitter()]);
 
-// const popupContent = `
-//   <div class="custom-popup">
-//     <h5>${location.title || 'N/A'}</h5>
-//     <div class="details">
-//       ${
-//         location.type === 'job' 
-//           ? `
-//             <p><i class="bi bi-building"></i> ${location.companyName || 'N/A'}</p>
-//             <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
-//             <p><i class="bi bi-calendar"></i> Posted: ${location.datePosted || 'N/A'}</p>
-//           `
-//           : `
-//             <p><i class="bi bi-calendar-event"></i> ${location.eventDate || 'N/A'}</p>
-//             <p><i class="bi bi-tag"></i> ${location.eventType || 'N/A'}</p>
-//             <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
-//             ${location.isOnline ? '<p><i class="bi bi-wifi"></i> Online Event</p>' : ''}
-//           `
-//       }
-//       <div class="mt-2">
-//         <button class="btn btn-sm btn-primary" 
-//           onclick="${location.type === 'job' 
-//             ? `window.location='/instance/${encodeURIComponent(location.iri)}'` 
-//             : `window.open('${location.eventURL || '#'}', '_blank')`}">
-//           More Details
-//         </button>
-//         <button class="btn btn-sm btn-secondary" 
-//           onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}', '_blank')">
-//           Get Directions
-//         </button>
-//       </div>
-//     </div>
-//   </div>
-// `;
-const popupContent = `
-  <div class="custom-popup">
-    <h5>${location.title || 'N/A'}</h5>
-    <div class="details">
-      ${
-        location.type === 'job' 
-          ? `
-            <p><i class="bi bi-building"></i> ${location.companyName || 'N/A'}</p>
-            <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
-            <p><i class="bi bi-calendar"></i> Posted: ${location.datePosted || 'N/A'}</p>
-          `
-          : `
-            <p><i class="bi bi-calendar-event"></i> Date: ${location.eventDate || 'N/A'}</p>
-            <p><i class="bi bi-tag"></i> ${location.eventType || 'N/A'}</p>
-            <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
-            ${location.isOnline ? '<p><i class="bi bi-wifi"></i> Online Event</p>' : ''}
-          `
-      }
-      <div class="mt-2">
-        <button class="btn btn-sm btn-primary" 
-          onclick="${location.type === 'job' 
-            ? `window.location='/instance/${encodeURIComponent(location.iri)}'` 
-            : `window.open('${location.eventURL || '#'}', '_blank')`}">
-          More Details
-        </button>
-        <button class="btn btn-sm btn-secondary" 
-          onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}', '_blank')">
-          Get Directions
-        </button>
-      </div>
-    </div>
-  </div>
-`;
-// Add event listener for the button after the popup is opened
-marker.on('popupopen', () => {
-  document.querySelector(`button[data-iri="${location.iri}"]`)?.addEventListener('click', () => {
-    if (onMarkerClick) {
-      onMarkerClick(location);
-    }
-    mapRef.current?.closePopup();
-  });
-});
+      const popupContent = `
+        <div class="custom-popup">
+          <h5>${location.title || 'N/A'}</h5>
+          <div class="details">
+            ${
+              location.type === 'job' 
+                ? `
+                  <p><i class="bi bi-building"></i> ${location.companyName || 'N/A'}</p>
+                  <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+                  <p><i class="bi bi-calendar"></i> Posted: ${location.datePosted || 'N/A'}</p>
+                `
+                : `
+                  <p><i class="bi bi-calendar-event"></i> Date: ${location.eventDate || 'N/A'}</p>
+                  <p><i class="bi bi-tag"></i> ${location.eventType || 'N/A'}</p>
+                  <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+                  ${location.isOnline ? '<p><i class="bi bi-wifi"></i> Online Event</p>' : ''}
+                `
+            }
+            <div class="mt-2">
+              <button class="btn btn-sm btn-primary" 
+                onclick="${location.type === 'job' 
+                  ? `window.location='/instance/${encodeURIComponent(location.iri)}'` 
+                  : `window.open('${location.eventURL || '#'}', '_blank')`}">
+                More Details
+              </button>
+              <button class="btn btn-sm btn-secondary" 
+                onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}', '_blank')">
+                Get Directions
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Add event listener for the button after the popup is opened
+      marker.on('popupopen', () => {
+        document.querySelector(`button[data-iri="${location.iri}"]`)?.addEventListener('click', () => {
+          if (onMarkerClick) {
+            onMarkerClick(location);
+          }
+          mapRef.current?.closePopup();
+        });
+      });
 
       marker.bindPopup(popupContent);
 
@@ -163,26 +131,26 @@ marker.on('popupopen', () => {
         marker.on('click', () => onMarkerClick(location));
       }
 
-// Using Leaflet's built-in icon with custom color and shadowUrl
-const jobIcon = L.icon({
-  iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  className: 'blue-marker'
-});
+      // Using Leaflet's built-in icon with custom color and shadowUrl
+      const jobIcon = L.icon({
+        iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
+        shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+        className: 'blue-marker'
+      });
 
-const eventIcon = L.icon({
-  iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  className: 'red-marker'
-});
+      const eventIcon = L.icon({
+        iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
+        shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+        className: 'red-marker'
+      });
 
       if (location.type === 'event') {
         marker.setIcon(eventIcon);
