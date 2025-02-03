@@ -63,13 +63,32 @@ const StaticNavbar: React.FC = () => {
             <Button
               variant="outline-light"
               className="me-2"
-              onClick={() => {
+            onClick={() => {
                 navigate('/suggestions');
                 handleLinkClick(); // Collapse the navbar on link click
               }}
             >
               Suggestions
             </Button>
+
+            <Button
+            variant="outline-light"
+            className = "me-2"
+            onClick={() => {
+              navigate('/searchevent');
+              handleLinkClick();}}
+          >
+            Search Event
+          </Button>
+
+          <Button
+            variant = "outline-light"
+            onClick={() => {
+              navigate('/eventstatistics');
+              handleLinkClick();}}
+          >
+            Events Statistics
+          </Button>
 
             {/* Profile or Login Button */}
             {isLoggedIn ? (
@@ -93,7 +112,9 @@ const StaticNavbar: React.FC = () => {
                 Login
               </Button>
             )}
-          </Nav>
+  
+          
+        </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>

@@ -1,0 +1,60 @@
+/* Empty days */
+.color-empty {
+    fill: #ebedf0;
+  }
+  
+  /* Low event count */
+  .color-scale-1 {
+    fill: #c6e48b;
+  }
+  
+  /* Medium-low event count */
+  .color-scale-2 {
+    fill: #7bc96f;
+  }
+  
+  /* Medium-high event count */
+  .color-scale-3 {
+    fill: #239a3b;
+  }
+  
+  /* High event count */
+  .color-scale-4 {
+    fill: #196127;
+  }
+  
+  /* Tooltip Styles */
+  [data-tooltip-id="heatmap-tooltip"] {
+    background: black;
+    color: white;
+    padding: 6px;
+    border-radius: 4px;
+  }
+
+  .react-calendar-heatmap rect:hover {
+    stroke: #555;
+    stroke-width: 1px;
+  }
+  .pie-chart-container {
+    display: flex; /* Align items horizontally */
+    justify-content: space-between; /* Space out the charts evenly */
+    gap: 20px; /* Add some space between the pie charts */
+  }
+  
+  .pie-chart-section {
+    flex: 1; /* Makes each pie chart take up equal space */
+    max-width: 35%; /* Prevents them from taking more than half of the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .pie-chart-section h2 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .chart-section {
+    margin-bottom: 60px; /* Add space between different chart sections */
+  }
+  
