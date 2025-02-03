@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Spinner, Tabs, Tab } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Map from '../components/Map';
-import '../pages/MapPage.css';
+import '../assets/styles/MapPage.css';
 
 interface Coordinates {
   lat: string;
@@ -31,7 +31,6 @@ interface EventLocation extends BaseLocation {
   eventTitle?: { value: string }; // Optional value property
   eventDate?: { value: string };
   isOnline?: { value: boolean };
-  //isfromromania
   isFromRomania?: { value: boolean };
   eventType?: { value: string };
   eventURL: string;
@@ -102,8 +101,8 @@ const MapPage: React.FC = () => {
         };
 
         const [jobsResponse, eventsResponse] = await Promise.all([
-          axios.get("http://localhost:8000/api/map-data", { params }),
-          axios.get("http://localhost:8000/api/events-map-data")
+          axios.get("http://localhost:8085/api/map-data", { params }),
+          axios.get("http://localhost:8085/api/events-map-data")
         ]);
 
         const jobLocations = jobsResponse.data
@@ -285,23 +284,29 @@ const MapPage: React.FC = () => {
             ) : (
               <Map
               // În cadrul mapării locațiilor
-                  locations={locations.filter(loc => loc.coordinates).map(loc => ({
-                    latitude: loc.coordinates!.lat,
-                    longitude: loc.coordinates!.lng,
-                    title: loc.type === 'job' 
-                      ? loc.jobTitle?.value || "N/A" 
-                      : loc.eventTitle?.value || "N/A",
-                    companyName: loc.type === 'job' ? loc.companyName?.value : undefined,
-                    address: loc.coordinates?.address || "N/A",
-                    datePosted: loc.type === 'job' ? formatDate(loc.datePosted?.value) : undefined,
-                    iri: loc.type === 'job' ? loc.jobIRI : loc.eventURL,
-                    type: loc.type,
-                    eventDate: loc.type === 'event' ? formatDate(loc.eventDate?.value) : undefined,
-                    eventType: loc.type === 'event' ? loc.eventType?.value : undefined,
-                    isOnline: loc.type === 'event' ? loc.isOnline?.value : undefined,
-                    eventURL: loc.type === 'event' ? loc.eventURL : undefined,
-                  }))
-                }
+              locations={locations.filter(loc => loc.coordinates).map(loc => ({
+                latitude: loc.coordinates!.lat,
+                longitude: loc.coordinates!.lng,
+                title: loc.type === 'job' 
+                  ? loc.jobTitle?.value || "N/A" 
+                  : loc.eventTitle?.value || "N/A",
+                description: loc.type === 'job' 
+                  ? loc.companyName?.value || "No description available" 
+                  : loc.eventType?.value || "No description available",
+                companyName: loc.type === 'job' ? (loc.companyName?.value || "No company name") : "", // Ensures fallback for companyName
+                address: loc.coordinates?.address || "N/A",
+                datePosted: loc.type === 'job' 
+                  ? (loc.datePosted?.value || "Unknown date") // Ensure it's always a string, fallback added here
+                  : "Unknown date", // Default to a string if undefined
+                iri: loc.type === 'job' ? loc.jobIRI : loc.eventURL,
+                type: loc.type,
+                eventDate: loc.type === 'event' 
+                  ? (loc.eventDate?.value || "Unknown date") // Fallback for eventDate, ensuring it's always a string
+                  : "Unknown date", // Default to a string if undefined
+                eventType: loc.type === 'event' ? loc.eventType?.value || "Unknown event type" : "unknown", // Fallback for eventType
+                isOnline: loc.type === 'event' ? loc.isOnline?.value || false : undefined, // Fallback for isOnline
+                eventURL: loc.type === 'event' ? loc.eventURL : undefined,
+              }))}
                 showEvents={activeTab === 'events'}
                 onMarkerClick={(location) => {
                   const originalLocation = locations.find(l =>
