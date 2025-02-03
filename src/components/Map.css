@@ -1,0 +1,81 @@
+.custom-popup {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 280px;
+  }
+
+  .popup-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+  }
+
+  .popup-title {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+
+  .popup-body {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    color: #666;
+  }
+
+  .detail-item i {
+    width: 20px;
+    margin-right: 8px;
+    color: #6c757d;
+  }
+
+  .popup-footer {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+
+  .popup-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    transition: background-color 0.2s;
+  }
+
+  .popup-button:hover {
+    background-color: #0056b3;
+  }
+
+  .popup-button i {
+    font-size: 0.8rem;
+  }
+
+  .custom-popup a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .custom-popup a:hover {
+    text-decoration: underline;
+  }
+
+  .blue-marker {
+    filter: hue-rotate(180deg) saturate(200%);
+  }
+  .red-marker {
+    filter: hue-rotate(300deg) saturate(200%);
+  }

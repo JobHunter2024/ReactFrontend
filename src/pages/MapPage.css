@@ -1,0 +1,131 @@
+/* MapPage.css */
+.map-page-container {
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .filter-panel .form-select {
+    min-width: 220px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+  }
+  
+  .filter-panel .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+  
+  .sidebar-container {
+    height: calc(100vh - 80px);
+    background: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+  }
+  
+  .listing-cards-container {
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  
+  .listing-card {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .listing-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .listing-card .card-header {
+    background: rgba(248, 249, 250, 0.9);
+    border-bottom: none;
+    font-weight: 600;
+    color: #2c3e50;
+    padding: 1rem;
+    border-radius: 8px 8px 0 0 !important;
+  }
+  
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .cluster-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .job-cluster {
+    background: #4a90e2;
+    border: 2px solid #2c6db3;
+  }
+  
+  .event-cluster {
+    background: #50e3c2;
+    border: 2px solid #2dbe9d;
+  }
+  
+  .custom-popup .leaflet-popup-content-wrapper {
+    border-radius: 8px !important;
+    padding: 0 !important;
+  }
+  
+  .custom-popup .leaflet-popup-content {
+    margin: 0 !important;
+    min-width: 250px;
+  }
+  
+  .job-popup {
+    padding: 1rem;
+    background: #f8f9fa;
+  }
+  
+  .event-popup {
+    padding: 1rem;
+    background: #f0fdf4;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+  }
+  
+  /* Scrollbar styling */
+  .listing-cards-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .listing-cards-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+  
+  .listing-cards-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+  
+  .listing-cards-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }

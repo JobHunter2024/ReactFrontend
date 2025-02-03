@@ -1,100 +1,243 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import L from "leaflet";
-L.Icon.Default.imagePath = "https://unpkg.com/leaflet/dist/images/";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import "leaflet.markercluster/dist/leaflet.markercluster";
+import "leaflet.markercluster";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import "leaflet-geosearch/dist/geosearch.css";
+import '../components/Map.css';
 
-const provider = new OpenStreetMapProvider();
-
-// Interfața pentru locații
 interface Location {
-  latitude: string; // Latitude este definită ca string
-  longitude: string; // Longitude este definită ca string
+  companyName: string;
+  address: string;
+  datePosted: string;
+  eventDate: string;
+  eventType: string;
+  isOnline: any;
+  eventURL: any;
+  latitude: string;
+  longitude: string;
   title: string;
   description: string;
-  iri:string;
+  iri: string;
+  type?: 'job' | 'event';
+  eventDetails?: {
+    date: string;
+    isOnline: boolean;
+    eventType?: string;
+    eventURL: string;
+  };
 }
 
 interface MapProps {
   locations: Location[];
+  showEvents?: boolean;
+  onMarkerClick?: (location: Location) => void;
 }
 
-const Map: React.FC<MapProps> = ({ locations }) => {
+const Map: React.FC<MapProps> = ({ locations = [], showEvents = true, onMarkerClick }) => {
+  const mapRef = useRef<L.Map | null>(null);
+  const layerControlRef = useRef<L.Control.Layers | null>(null);
+
   useEffect(() => {
-    // Inițializează harta centrată pe România
-    const map = L.map("map").setView([44.4268, 26.1025], 6);
+    // Initialize map only once
+    if (!mapRef.current) {
+      mapRef.current = L.map("map").setView([44.4268, 26.1025], 6);
 
-    // Adaugă stratul OpenStreetMap
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(mapRef.current);
+    }
 
-    // Creează un grup de clustere
-    //const markers = L.markerClusterGroup();
+    const map = mapRef.current;
 
-    const markers = L.markerClusterGroup({
-      maxClusterRadius: 80, // Raza maximă a clusterului (în pixeli)
-      spiderfyOnMaxZoom: true, // Permite "spiderfying" markerii la zoom maxim
-      showCoverageOnHover: false, // Dezactivează afișarea zonei de acoperire la hover
-      zoomToBoundsOnClick: true, // Zoom automat la cluster la clic
+    // Create cluster groups
+    const jobMarkers = L.markerClusterGroup({
+      maxClusterRadius: 80,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
     });
-    // Adaugă markerele din array în grupul de clustere
-    
-    const jitter = () => (Math.random() - 0.5) * 0.0011; // Adaugă o mică variație
+
+    const eventMarkers = L.markerClusterGroup({
+      maxClusterRadius: 80,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+    });
+
+    // Add markers
+    const jitter = () => (Math.random() - 0.5) * 0.0011;
+
     locations.forEach((location) => {
-      const marker = L.marker([
-        parseFloat(location.latitude) + jitter(),
-        parseFloat(location.longitude) + jitter(),
-      ]);
+      const lat = parseFloat(location.latitude);
+      const lng = parseFloat(location.longitude);
 
-      // Crează un popup personalizat cu detalii
-      const popupContent = `
-        <div style="text-align: center;">
-          <h3>${location.title}</h3>
-          <p><strong>Companie:</strong> ${location.description.split(" - ")[0]}</p>
-          <p><strong>Adresă:</strong> ${location.description.split(" - ")[1]}</p>
-          <a href="/instance/${encodeURIComponent(location.iri)}" target="_blank" style="color: blue; text-decoration: underline;">Vezi detalii</a>
-        </div>
-      `;
+      // Check if latitude and longitude are valid numbers
+      if (isNaN(lat) || isNaN(lng)) {
+        console.error(`Invalid coordinates for location: ${location.title}`, location);
+        return;
+      }
 
-      // Atașează popup-ul la marker
+      const marker = L.marker([lat + jitter(), lng + jitter()]);
+
+// const popupContent = `
+//   <div class="custom-popup">
+//     <h5>${location.title || 'N/A'}</h5>
+//     <div class="details">
+//       ${
+//         location.type === 'job' 
+//           ? `
+//             <p><i class="bi bi-building"></i> ${location.companyName || 'N/A'}</p>
+//             <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+//             <p><i class="bi bi-calendar"></i> Posted: ${location.datePosted || 'N/A'}</p>
+//           `
+//           : `
+//             <p><i class="bi bi-calendar-event"></i> ${location.eventDate || 'N/A'}</p>
+//             <p><i class="bi bi-tag"></i> ${location.eventType || 'N/A'}</p>
+//             <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+//             ${location.isOnline ? '<p><i class="bi bi-wifi"></i> Online Event</p>' : ''}
+//           `
+//       }
+//       <div class="mt-2">
+//         <button class="btn btn-sm btn-primary" 
+//           onclick="${location.type === 'job' 
+//             ? `window.location='/instance/${encodeURIComponent(location.iri)}'` 
+//             : `window.open('${location.eventURL || '#'}', '_blank')`}">
+//           More Details
+//         </button>
+//         <button class="btn btn-sm btn-secondary" 
+//           onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}', '_blank')">
+//           Get Directions
+//         </button>
+//       </div>
+//     </div>
+//   </div>
+// `;
+const popupContent = `
+  <div class="custom-popup">
+    <h5>${location.title || 'N/A'}</h5>
+    <div class="details">
+      ${
+        location.type === 'job' 
+          ? `
+            <p><i class="bi bi-building"></i> ${location.companyName || 'N/A'}</p>
+            <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+            <p><i class="bi bi-calendar"></i> Posted: ${location.datePosted || 'N/A'}</p>
+          `
+          : `
+            <p><i class="bi bi-calendar-event"></i> Date: ${location.eventDate || 'N/A'}</p>
+            <p><i class="bi bi-tag"></i> ${location.eventType || 'N/A'}</p>
+            <p><i class="bi bi-geo-alt"></i> ${location.address || 'N/A'}</p>
+            ${location.isOnline ? '<p><i class="bi bi-wifi"></i> Online Event</p>' : ''}
+          `
+      }
+      <div class="mt-2">
+        <button class="btn btn-sm btn-primary" 
+          onclick="${location.type === 'job' 
+            ? `window.location='/instance/${encodeURIComponent(location.iri)}'` 
+            : `window.open('${location.eventURL || '#'}', '_blank')`}">
+          More Details
+        </button>
+        <button class="btn btn-sm btn-secondary" 
+          onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}', '_blank')">
+          Get Directions
+        </button>
+      </div>
+    </div>
+  </div>
+`;
+// Add event listener for the button after the popup is opened
+marker.on('popupopen', () => {
+  document.querySelector(`button[data-iri="${location.iri}"]`)?.addEventListener('click', () => {
+    if (onMarkerClick) {
+      onMarkerClick(location);
+    }
+    mapRef.current?.closePopup();
+  });
+});
+
       marker.bindPopup(popupContent);
 
-      // Adaugă markerul în grupul de clustere
-      markers.addLayer(marker);
+      if (onMarkerClick) {
+        marker.on('click', () => onMarkerClick(location));
+      }
+
+// Using Leaflet's built-in icon with custom color and shadowUrl
+const jobIcon = L.icon({
+  iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'blue-marker'
+});
+
+const eventIcon = L.icon({
+  iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'red-marker'
+});
+
+      if (location.type === 'event') {
+        marker.setIcon(eventIcon);
+        eventMarkers.addLayer(marker);
+      } else {
+        marker.setIcon(jobIcon);
+        jobMarkers.addLayer(marker);
+      }
     });
 
-    // Adaugă grupul de clustere pe hartă
-    map.addLayer(markers);
+    // Add clusters to map
+    map.addLayer(jobMarkers);
+    if (showEvents) {
+      map.addLayer(eventMarkers);
+    }
 
-    // Adaugă search control
-  const searchControl = GeoSearchControl({
-    provider: provider,
-    style: 'bar', // Stilul barei de căutare
-    showMarker: true, // Arată markerul la locația găsită
-    autoClose: true, // Închide rezultatele după selectare
-    searchLabel: 'Caută locație', // Text placeholder
-    keepResult: true, // Păstrează rezultatul căutării
-  });
+    // Add layer control
+    const overlayMaps = {
+      "Jobs": jobMarkers,
+      "Events": eventMarkers
+    };
 
-  // Adaugă controlul de căutare pe hartă
-  map.addControl(searchControl);
+    if (layerControlRef.current) {
+      layerControlRef.current.remove();
+    }
+    layerControlRef.current = L.control.layers(undefined, overlayMaps).addTo(map);
 
-  // Curăță harta și controlul de căutare la demontarea componentei
-  return () => {
-    map.removeControl(searchControl);
-    map.remove();
-  };
-   
-  }, [locations]);
+    // Add search control
+    const searchControl = GeoSearchControl({
+      provider: new OpenStreetMapProvider(),
+      style: 'bar',
+      showMarker: false,
+      autoClose: true,
+    });
+    map.addControl(searchControl);
 
-  return <div id="map" style={{ width: "100%", height: "500px" }}></div>;
+    // Cleanup function
+    return () => {
+      // Remove layers and controls
+      map.removeControl(searchControl);
+      jobMarkers.clearLayers();
+      eventMarkers.clearLayers();
+
+      if (layerControlRef.current) {
+        map.removeControl(layerControlRef.current);
+      }
+
+      // Only remove map on component unmount
+      if (!mapRef.current) return;
+      mapRef.current.remove();
+      mapRef.current = null;
+    };
+  }, [locations, showEvents, onMarkerClick]);
+
+  return <div id="map" style={{ width: "100%", height: "500px" }} />;
 };
 
 export default Map;
