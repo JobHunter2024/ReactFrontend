@@ -1,0 +1,69 @@
+.event-search-page {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .filters {
+    width: 25%;
+    background: #aad688;
+    padding: 15px;
+    border-radius: 8px;
+
+    max-height: 90vh;  
+    overflow-y: auto;  
+    position: sticky; 
+    top: 20px; 
+  }
+  
+  .filters h2 {
+    margin-bottom: 10px;
+  }
+  
+  .filters div {
+    margin-bottom: 15px;
+  }
+
+  .filters label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .filters select,
+  .filters input,
+  .filters .react-select__control {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #47894b;
+    box-sizing: border-box;
+  }
+  
+  /* Hover effects for filters */
+  .filters select:hover,
+  .filters input:hover,
+  .filters .react-select__control:hover {
+    border-color: #47894b;
+  }
+  
+  .events-list {
+    width: 75%;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .events-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .events-list li {
+    background: #f0f7da;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  

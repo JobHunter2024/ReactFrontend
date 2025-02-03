@@ -13,6 +13,8 @@ import { ToastProvider } from './context/ToastContext';
 import JwtUtils from './utils/JwtUtils';
 import JobChart from './pages/JobChart';
 import MapPage from './pages/MapPage';
+import EventStatisticsPage from './pages/EventStatisticsPage';
+import SearchEventPage from './pages/SearchEventPage';
 
 const App: React.FC = () => {
   return (
@@ -30,7 +32,8 @@ const App: React.FC = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/job" element={<JobChart />} />
+            <Route path="/eventstatistics" element={<EventStatisticsPage />} />
+            <Route path="/searchevent" element={<SearchEventPage />} />
             <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route for 404 page */}
           </Routes>
         </div>

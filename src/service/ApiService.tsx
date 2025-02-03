@@ -32,19 +32,19 @@ export interface Entity {
         "instanceOfValues": string
   }
 
-  export interface Suggestion {
-    "intermediateRelatedSkill": string,
-    "intermediateRelation": string,
-    "relatedSkill": string,
-    "relation": string,
-    "resourceUri": string
-  }
-
   export interface Job {
-    availability : string;
+    dateRemoved : string;
     label : string;
     job : string;
     relatedSkills : string;
+  }
+
+  export interface Suggestion {
+    [key: string]: {
+      [key: string]: {
+        relations: string[];
+      };
+    };
   }
 
 export class ApiService {
@@ -175,18 +175,33 @@ export class ApiService {
       }
   }
 
-  public async getSuggestions(iri : string) {
+  public async getSuggestions(iri: string[]): Promise<any> {
     try {
-        const response = await axios.post<Suggestion[]>("http://localhost:5000/api/v1/sparql/query", {
-          "iri" : iri
-        }
-        );
-
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-        throw(error);
-      }
+      // Make the API call
+      const response = await axios.post<Suggestion[]>("http://localhost:5000/api/v1/sparql/suggestions", {
+        technologies: iri
+      });
+  
+      // Decode the response
+      const decodedRelations = Object.entries(response.data).map(([technology, details]) => {
+        const technologyName = technology.split('#')[1]; // Extract the technology name from the URI
+        const relations = Object.entries(details).map(([dependency, relationDetails]) => {
+          const dependencyName = dependency.split('#')[1]; // Extract dependency name from the URI
+          const relationsList = relationDetails.relations; // Array of relations
+          return { dependencyName, relationsList };
+        });
+  
+        return {
+          technologyName,
+          relations
+        };
+      });
+  
+      return decodedRelations;
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      throw error;
+    }
   }
 
   public async getJobs() {
@@ -198,6 +213,26 @@ export class ApiService {
         console.error("Error fetching suggestions:", error);
         throw(error);
       }
+  }
+
+  public async getSkillData(uri: string) {
+    try {
+      const response = await axios.post<any>("http://localhost:5001/api/v1/wiki_link", {
+        iri: uri,
+      });
+  
+      // Check if the response contains an error field
+      if (response.data && response.data.error) {
+        console.error(`Error: ${response.data.error}`);
+        return null; // Return null if error is present in the response
+      }
+  
+      return response.data; // Return the response data if no error
+  
+    } catch (error) {
+      console.error("Error fetching skill data:", error);
+      return null; // Return null in case of request failure
+    }
   }
 
 }
