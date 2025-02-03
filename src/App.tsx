@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import { ToastProvider } from './context/ToastContext';
 import JwtUtils from './utils/JwtUtils';
 import JobChart from './pages/JobChart';
+import MapPage from './pages/MapPage';
 import EventStatisticsPage from './pages/EventStatisticsPage';
 import SearchEventPage from './pages/SearchEventPage';
 
@@ -26,6 +27,7 @@ const App: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/instance/:id" element={<InstancePage />} />
+            <Route path="/map" element={<MapPage />} />
             <Route path="/suggestions" element={<SuggestionsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/login" element={<LoginPage />} />

@@ -90,6 +90,16 @@ const StaticNavbar: React.FC = () => {
             Events Statistics
           </Button>
 
+            <Button
+              variant="outline-light"
+              className="me-2"
+              onClick={() => {
+              navigate('/map');
+              handleLinkClick(); // Collapse the navbar on link click
+              }}
+            >
+              Map
+            </Button>
             {/* Profile or Login Button */}
             {isLoggedIn ? (
               <Button
