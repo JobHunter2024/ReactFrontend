@@ -29,6 +29,7 @@ const InstancePage: React.FC = () => {
   const [jobLocation, setJobLocation] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [skillData, setSkillData] = useState<any>(null); // Added to hold skill data
+  const [mapKey, setMapKey] = useState(0); // Key to force re-mounting
 
   const api = new ApiService('http://localhost:8888/api/v1');
   const statisticsApi = new StatisticsService('http://localhost:8888/api/v1');
@@ -88,6 +89,9 @@ const InstancePage: React.FC = () => {
 
   useEffect(() => {
     const decodedId = decodeURIComponent(id || '');
+
+    setCoordinates(null); // Reset coordinates on ID change
+    setMapKey((prevKey) => prevKey + 1); // Change key to force re-render
 
     const fetchData = async () => {
       try {
@@ -225,7 +229,12 @@ const InstancePage: React.FC = () => {
             </h1>
 
             {pageEntityType === "Job" && coordinates && (
-              <MapContainer center={coordinates as LatLngExpression} zoom={13} style={{ height: '400px', width: '100%' }}>
+              <MapContainer
+                key={id} // Forces re-render when `id` changes
+                center={coordinates as LatLngExpression}
+                zoom={13}
+                style={{ height: '400px', width: '100%' }}
+              >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
